@@ -1,6 +1,6 @@
-# DobotM1‚Ì§Œä
+# DobotM1ã®åˆ¶å¾¡
 
-Dobot Studio ‚Ì Pythonƒ‰ƒ“ƒ^ƒCƒ€‚ÅŽÀs‚·‚éƒvƒƒOƒ‰ƒ€‚ÆA‚»‚ê‚Æ‚Í•Ê‚ÌPythonƒ‰ƒ“ƒ^ƒCƒ€‚ÅŽÀs‚·‚éƒvƒƒOƒ‰ƒ€‚ÅAƒ\ƒPƒbƒg’ÊM‚·‚é‚½‚ß‚Ì—Œ`
+Dobot Studio ã® Pythonãƒ©ãƒ³ã‚¿ã‚¤ãƒ ã§å®Ÿè¡Œã™ã‚‹ãƒ—ãƒ­ã‚°ãƒ©ãƒ ã¨ã€ãã‚Œã¨ã¯åˆ¥ã®Pythonãƒ©ãƒ³ã‚¿ã‚¤ãƒ ã§å®Ÿè¡Œã™ã‚‹ãƒ—ãƒ­ã‚°ãƒ©ãƒ ã§ã€ã‚½ã‚±ãƒƒãƒˆé€šä¿¡ã™ã‚‹ãŸã‚ã®é››å½¢
 
-- server.py : Dobot Studio ‚ÅŽÀs‚·‚éƒvƒƒOƒ‰ƒ€
-- client.py : ã‹L‚Æ‚Í•Ê‚ÌPythonƒ‰ƒ“ƒ^ƒCƒ€‚ÅŽÀs‚·‚éƒvƒƒOƒ‰ƒ€
+- server.py : Dobot Studio ã§å®Ÿè¡Œã™ã‚‹ãƒ—ãƒ­ã‚°ãƒ©ãƒ 
+- client.py : ä¸Šè¨˜ã¨ã¯åˆ¥ã®Pythonãƒ©ãƒ³ã‚¿ã‚¤ãƒ ã§å®Ÿè¡Œã™ã‚‹ãƒ—ãƒ­ã‚°ãƒ©ãƒ 
