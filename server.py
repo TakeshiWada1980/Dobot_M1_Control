@@ -6,6 +6,9 @@ import logging
 import time
 import json
 
+# Dobot Studio で実行する場合は True に設定
+DOBOT_STUDIO_ENV = False
+
 logging.basicConfig(format='[%(levelname)s] %(asctime)s: %(message)s')
 log = logging.getLogger(__name__)
 log.setLevel(level=logging.DEBUG)
@@ -25,17 +28,66 @@ def exec_cmd(c):
 
     # 基本的には、ここのelif節の実装を拡張していく。
 
+    #JUMP命令 
     if c['command'] == 'JUMP' :
-      log.info('JUMP TO ({0},{1},{2})'.format(c['x'],c['y'],c['z']))
-      # dType.SetPTPCmdEx(api,c['x'],c['y'],c['z'],1)
+      log.info('JUMP TO ({0},{1},{2},{3})'.format(c['x'],c['y'],c['z'],c['r']))
+      if DOBOT_STUDIO_ENV :
+        dType.SetPTPCmdEx(api,0,c['x'],c['y'],c['z'],c['r'],1)
       res = dict(status='OK')
+
+    #WAIT命令 
+    elif c['command'] == 'WAIT' :
+      log.info('WAIT ({0} ms)'.format(c['ms']))
+      if DOBOT_STUDIO_ENV :
+        dType.SetWAITCmdEx(api,c['s'],1)
+      res = dict(status='OK')
+
+    #SETOUTPUT命令 
+    elif c['command'] == 'SETOUTPUT' :
+      log.info('SET ({0} pin / Value {1})'.format(c['pin'],c['value']))
+      if DOBOT_STUDIO_ENV :
+        dType.SetIODOEx(api, c['pin'], c['value'], 1)
+      res = dict(status='OK')
+
+    #GETINPUT命令 
+    elif c['command'] == 'GETINPUT' :
+      if DOBOT_STUDIO_ENV :
+        result=dType.GetIODI(api,c[pin])[0]
+      else :
+        result=334 # Dummy値
+      log.info('GET ({0} pin / Value {1})'.format(c['pin'],result))
+      res = dict(status='OK',ret=result)
+
+    #ARMORIENTATION命令
+    elif c['command'] == 'ARMORIENTATION' :
+      log.info('ARMORIENTATION ({0} mode)'.format(c['mode']))
+      if DOBOT_STUDIO_ENV :
+        dType.SetArmOrientationEx(api,c['mode'], 1)
+      res = dict(status='OK')
+
+    #SETCORDINATESPEED命令 
+    elif c['command'] == 'SETCORDINATESPEED' :
+      log.info('SETCORDINATESPEED ({0} {1})'.format(c['velocity'],c['jerk']))
+      if DOBOT_STUDIO_ENV :
+        dType.SetPTPCommonParamsEx(api,c['velocity'],c['jerk'],1)
+      res = dict(status='OK')
+
+    #SETJUMPPARAM命令 
+    elif c['command'] == 'SETJUMPPARAM' :
+      log.info('SETJUMPPARAM (hieght = {0} zlimit = {1})'.format(c['height'],c['zlimit']))
+      if DOBOT_STUDIO_ENV :
+        dType.SetPTPJumpParamsEx(api,c['height'],c['zlimit'],1)
+      res = dict(status='OK')
+
     elif c['command'] == 'QUIT' :
       log.info('QUIT')
       res = dict(status='OK')
+
     else :
       msg = 'Unknown commad : {0}'.format(str(c['command']))
       log.error(msg)
       res = dict(status='Error',msg=msg)
+
   except KeyError:
     cmd_arg = [ s for s in c.keys() if s != 'command']
     msg = 'Invalid argument : "{0}" -> {{{1}}}'.format(c['command'],", ".join(cmd_arg))

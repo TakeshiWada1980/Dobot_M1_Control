@@ -3,8 +3,6 @@ import logging
 import time
 import json
 
-import math
-
 class DobotCommandSender:
 
   def __init__(self,host='127.0.0.1',port=8889):
@@ -56,12 +54,17 @@ if __name__ == '__main__':
   logging.getLogger('DobotCommandSender').setLevel(logging.DEBUG)
   cs = DobotCommandSender('127.0.0.1')
 
-  cs.send(True)
-  cs.send(dict(x=10))
-
-  cs.send(dict(command='JUMP',x=350,y=10,z=40))
-  cs.send(dict(command='JUMP',x=400,y=20,z=40))
-  cs.send(dict(command='JAMP',x=400,y=20,z=40)) # 誤コマンド
-  cs.send(dict(command='JUMP',x=400,     z=40)) # 引数不足
+  cs.send(dict(command='ARMORIENTATION',mode=1))
+  cs.send(dict(command='SETCORDINATESPEED',velocity=20,jerk=50))
+  cs.send(dict(command='SETJUMPPARAM',height=20,zlimit=200))
+  
+  cs.send(dict(command='SETOUTPUT',pin=1,value=1))
+  cs.send(dict(command='GETINPUT',pin=1 ))
+  
+  cs.send(dict(command='WAIT',ms=2000))
+  cs.send(dict(command='JUMP',x=350,y=10,z=40,r=0))
+  cs.send(dict(command='JUMP',x=400,y=20,z=40,r=0))
+  cs.send(dict(command='JAMP',x=400,y=20,z=40,r=0)) # 誤コマンド
+  cs.send(dict(command='JUMP',x=400,     z=40,r=0)) # 引数不足
 
   cs.send(dict(command='QUIT'))
