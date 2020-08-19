@@ -14,11 +14,14 @@ if __name__ == '__main__':
   
   # I/O系
   cs.set_output(pin=1,value=1)
+  cs.set_output(pin=100,value=1)
+  cs.set_output(pin=1,value=-1)
   cs.get_input(pin=1)
   cs.wait(2000)
 
   # 移動系
   cs.jump_to(x=350,y=10,z=40)
+  cs.jump_to(x=350,y=10,z=5)
   cs.jump_to(x=350,y=10,z=40,r=20)
   cs.go_to(x=350,y=10,z=40)
 

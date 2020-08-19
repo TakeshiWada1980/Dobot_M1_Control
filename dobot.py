@@ -3,6 +3,9 @@ import logging
 import time
 import json
 
+Z_MAX_LIMIT = 250
+Z_MIN_LIMIT = 10
+
 class CommandSender:
 
   def __init__(self,host='127.0.0.1',port=8889):
@@ -58,6 +61,10 @@ class CommandSender:
     mode : int
       設定値 0(Right) or 1(Left)
     '''
+    if mode not in (0,1):
+      msg = f'InvalidArgError : mode={mode} in arm_orientation(...)'
+      self.log.error(msg)
+      return dict(is_sccess=False, msg=msg)
     return self._send(dict(command='ArmOrientation',mode=mode))
 
   def set_cordinate_speed(self,velocity,jerk):
@@ -73,7 +80,7 @@ class CommandSender:
     '''
     return self._send(dict(command='SetCordinateSpeed',velocity=velocity,jerk=jerk))
 
-  def set_jump_pram(self,height=20,zlimit=200):
+  def set_jump_pram(self,height,zlimit):
     '''
     SetCordinateSpeed
 
@@ -84,6 +91,14 @@ class CommandSender:
     zlimit : int 
     　設定値
     '''
+    if not( Z_MIN_LIMIT <= height <= Z_MAX_LIMIT ):
+      msg = f'InvalidArgError : height={height} in set_jump_pram(...)'
+      self.log.error(msg)
+      return dict(is_sccess=False, msg=msg) 
+    if not( Z_MIN_LIMIT <= zlimit <= Z_MAX_LIMIT ):
+      msg = f'InvalidArgError : zlimit={zlimit} in set_jump_pram(...)'
+      self.log.error(msg)
+      return dict(is_sccess=False, msg=msg) 
     return self._send(dict(command='SetJumpPram',height=height,zlimit=zlimit))
 
   def set_output(self,pin,value):
@@ -98,9 +113,13 @@ class CommandSender:
       出力設定値 0 or 1
     '''
     if not( 1 <= pin <= 6 ):
-      return dict(is_sccess=False, msg='')
+      msg = f'InvalidArgError : pin={pin} in SetOutput(...)'
+      self.log.error(msg)
+      return dict(is_sccess=False, msg=msg)
     if value not in (0,1) :
-      return dict(is_sccess=False, msg='')
+      msg = f'InvalidArgError : value={value} in SetOutput(...)'
+      self.log.error(msg)
+      return dict(is_sccess=False, msg=msg)
     return self._send(dict(command='SetOutput',pin=pin,value=value))
 
   def get_input(self,pin):
@@ -113,7 +132,9 @@ class CommandSender:
       ピン番号
     '''
     if not( 1 <= pin <= 6 ):
-      return dict(is_sccess=False, msg='')
+      msg = f'InvalidArgError : pin={pin} in get_input(...)'
+      self.log.error(msg)
+      return dict(is_sccess=False, msg=msg)
     return self._send(dict(command='GetInput',pin=pin))
 
   def wait(self,ms):
@@ -142,6 +163,10 @@ class CommandSender:
     r : int
       回転量（デフォルト値0）
     '''
+    if not( Z_MIN_LIMIT <= z <= Z_MAX_LIMIT ):
+      msg = f'InvalidArgError : z={z} in jump_to(...)'
+      self.log.error(msg)
+      return dict(is_sccess=False, msg=msg)    
     return self._send(dict(command='JumpTo',x=x,y=y,z=z,r=r))
 
   def go_to(self,x,y,z,r=0):
@@ -159,6 +184,10 @@ class CommandSender:
     r : int
       回転量（デフォルト値0）
     '''
+    if not( Z_MIN_LIMIT <= z <= Z_MAX_LIMIT ):
+      msg = f'InvalidArgError : z={z} in go_to(...)'
+      self.log.error(msg)
+      return dict(is_sccess=False, msg=msg) 
     return self._send(dict(command='GoTo',x=x,y=y,z=z,r=r))
 
   def quit(self):
