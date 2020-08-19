@@ -44,6 +44,9 @@ class DobotCommandSender:
       self.log.error('  - Dobot側プログラムが実行状態であることを確認してください。') 
       return dict(status='Error')
 
+  def jump_to(self,x,y,z):
+    return self.send(dict(command='JUMP',x=x,y=y,z=z,r=0))
+
   def __repr__(self):
     return f'DobotCommandSender_{self.host}:{self.port}'
 
@@ -63,6 +66,8 @@ if __name__ == '__main__':
   
   cs.send(dict(command='WAIT',ms=2000))
   cs.send(dict(command='JUMP',x=350,y=10,z=40,r=0))
+  cs.jump_to(350,10,40)
+
   cs.send(dict(command='JUMP',x=400,y=20,z=40,r=0))
   cs.send(dict(command='JAMP',x=400,y=20,z=40,r=0)) # 誤コマンド
   cs.send(dict(command='JUMP',x=400,     z=40,r=0)) # 引数不足
