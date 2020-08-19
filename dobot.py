@@ -3,12 +3,23 @@ import logging
 import time
 import json
 
-Z_MAX_LIMIT = 250
-Z_MIN_LIMIT = 10
-
 class CommandSender:
 
-  def __init__(self,host='127.0.0.1',port=8889):
+  def __init__(self,host:str='127.0.0.1', port:int=8889):
+    '''
+    CommandSender Constructor
+
+    Parameters
+    ----------
+    host : str
+      接続先IPアドレス（例 : '127.0.0.1'）
+    port : int
+      接続先ポート（デフォルト値 : 0）
+    '''
+
+    self.__Z_MAX_LIMIT = 250
+    self.__Z_MIN_LIMIT = 10
+
     self.host = host
     self.port = port
     self.timeout = 5
@@ -20,7 +31,15 @@ class CommandSender:
       self.log.error('例外を発生させて強制終了させます。')
       raise Exception
 
-  def _send(self,cmd_dict):
+  @property
+  def Z_MAX_LIMIT(self):
+    return self.__Z_MAX_LIMIT
+
+  @property
+  def Z_MIN_LIMIT(self):
+    return self.__Z_MIN_LIMIT
+
+  def _send(self, cmd_dict):
 
     # 引数「cmd_dict」がdictオブジェクトであることを確認
     if not isinstance(cmd_dict,dict) :
@@ -52,7 +71,7 @@ class CommandSender:
       self.log.error('  - Dobot側プログラムが実行状態であることを確認してください。') 
       return dict(is_sccess=False, msg='ConnectionRefused')
 
-  def arm_orientation(self,mode):
+  def arm_orientation(self, mode:int):
     '''
     ArmOrientation
 
@@ -80,7 +99,7 @@ class CommandSender:
     '''
     return self._send(dict(command='SetCordinateSpeed',velocity=velocity,jerk=jerk))
 
-  def set_jump_pram(self,height,zlimit):
+  def set_jump_pram(self, height:int, zlimit:int):
     '''
     SetCordinateSpeed
 
@@ -91,17 +110,17 @@ class CommandSender:
     zlimit : int 
     　設定値
     '''
-    if not( Z_MIN_LIMIT <= height <= Z_MAX_LIMIT ):
+    if not( self.Z_MIN_LIMIT <= height <= self.Z_MAX_LIMIT ):
       msg = f'InvalidArgError : height={height} in set_jump_pram(...)'
       self.log.error(msg)
       return dict(is_sccess=False, msg=msg) 
-    if not( Z_MIN_LIMIT <= zlimit <= Z_MAX_LIMIT ):
+    if not( self.Z_MIN_LIMIT <= zlimit <= self.Z_MAX_LIMIT ):
       msg = f'InvalidArgError : zlimit={zlimit} in set_jump_pram(...)'
       self.log.error(msg)
       return dict(is_sccess=False, msg=msg) 
     return self._send(dict(command='SetJumpPram',height=height,zlimit=zlimit))
 
-  def set_output(self,pin,value):
+  def set_output(self, pin:int, value:int):
     '''
     SetOutput(DigitalOutput)
 
@@ -122,7 +141,7 @@ class CommandSender:
       return dict(is_sccess=False, msg=msg)
     return self._send(dict(command='SetOutput',pin=pin,value=value))
 
-  def get_input(self,pin):
+  def get_input(self, pin:int):
     '''
     GetInput(AnalogInput)
 
@@ -137,7 +156,7 @@ class CommandSender:
       return dict(is_sccess=False, msg=msg)
     return self._send(dict(command='GetInput',pin=pin))
 
-  def wait(self,ms):
+  def wait(self, ms:int):
     '''
     Wait
 
@@ -148,7 +167,7 @@ class CommandSender:
     '''
     return self._send(dict(command='Wait',ms=ms))
 
-  def jump_to(self,x,y,z,r=0):
+  def jump_to(self, x:int, y:int, z:int, r:int=0):
     '''
     JumpTo
 
@@ -161,15 +180,18 @@ class CommandSender:
     z : int
       移動先のZ座標     
     r : int
-      回転量（デフォルト値0）
+      回転量（デフォルト値:0）
     '''
-    if not( Z_MIN_LIMIT <= z <= Z_MAX_LIMIT ):
-      msg = f'InvalidArgError : z={z} in jump_to(...)'
-      self.log.error(msg)
-      return dict(is_sccess=False, msg=msg)    
+    for t in ((x,'x'),(y,'y'),(z,'z'),(r,'r')):
+      if not isinstance(t[0],int) :
+        msg = f'CommandSender.jump_to(...) の 引数 {t[1]} は int型 で与えてください。'
+        raise TypeError(msg)
+    if not( self.Z_MIN_LIMIT <= z <= self.Z_MAX_LIMIT ):
+      msg = f'CommandSender.jump_to(...) の 引数 z は {self.Z_MIN_LIMIT} 以上 {self.Z_MAX_LIMIT} 以下で与えてください。'
+      raise ValueError(msg)
     return self._send(dict(command='JumpTo',x=x,y=y,z=z,r=r))
 
-  def go_to(self,x,y,z,r=0):
+  def go_to(self, x:int, y:int, z:int, r:int=0):
     '''
     GoTo
 
@@ -184,7 +206,7 @@ class CommandSender:
     r : int
       回転量（デフォルト値0）
     '''
-    if not( Z_MIN_LIMIT <= z <= Z_MAX_LIMIT ):
+    if not( self.Z_MIN_LIMIT <= z <= self.Z_MAX_LIMIT ):
       msg = f'InvalidArgError : z={z} in go_to(...)'
       self.log.error(msg)
       return dict(is_sccess=False, msg=msg) 

@@ -15,13 +15,16 @@ def cs():
   cs.quit()
 
 @pytest.mark.parametrize(('x','y','z','r','expected'), [
-  (10,10,20,None,  True),
-  (10,10,20,0,     True),
-  (10,10, 0,0,     False),  # z の範囲異常
+  (   10,    10,   20, None,  True),
+  (   10,    10,   20,    0,  True),
+  (   10,    10,    0,    0,  ValueError), # zの範囲異常 raises(ValueError
+  (   10,  '10',    0,    0,  TypeError ), # yのses(ValueError
 ])
 def test_jump_to(x,y,z,r,expected,cs):
-  if r == None :
-    ret = cs.jump_to(x,y,z)
+
+  if not isinstance(expected,bool) :
+    with pytest.raises(expected):
+      _ = cs.jump_to(x,y,z) if ( r is None ) else cs.jump_to(x,y,z,r)
   else :
-    ret = cs.jump_to(x,y,z,r)
-  assert ret['is_sccess'] == expected
+    ret = cs.jump_to(x,y,z) if ( r is None ) else cs.jump_to(x,y,z,r)
+    assert ret['is_sccess'] == expected

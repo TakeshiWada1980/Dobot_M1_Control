@@ -21,8 +21,9 @@ if __name__ == '__main__':
 
   # 移動系
   cs.jump_to(x=350,y=10,z=40)
-  cs.jump_to(x=350,y=10,z=5)
-  cs.jump_to(x=350,y=10,z=40,r=20)
-  cs.go_to(x=350,y=10,z=40)
 
+  cs.jump_to(x=350,y=10,z=40,r=20)
+  #cs.jump_to(x=350,y=10,z=1140,r=20)
+  
+  cs.go_to(x=350,y=10,z=40)
   cs.quit()
