@@ -12,19 +12,24 @@ class CommandSender:
     self.buffer_size = 1024
     self.log = logging.getLogger('DobotCommandSender')
 
+    ret = self.ping()
+    if not ret['is_sccess'] :
+      self.log.error('例外を発生させて強制終了させます。')
+      raise Exception
+
   def _send(self,cmd_dict):
 
     # 引数「cmd_dict」がdictオブジェクトであることを確認
     if not isinstance(cmd_dict,dict) :
       self.log.error('引数「cmd_dict」はdict型で与えてください。')
       self.log.error("  - 例：send(dict(command='QUIT'))")
-      return dict(status='Error')
+      return dict(is_sccess=False, msg='TypeError(cmd_dict)')
 
     # 引数「cmd_dict」のキーに command が含まれていることを確認
     if 'command' not in cmd_dict :
       self.log.error('引数「cmd_dict（dict型）」のキーには「command」を含めてください。')
       self.log.error("  - 例：send(dict(command='QUIT'))")
-      return dict(status='Error')
+      return dict(is_sccess=False, msg="InvalidArgError(Not found 'command' key in cmd_dict)")
       
     try :
       with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
@@ -37,12 +42,12 @@ class CommandSender:
           self.log.info(f' RES >> {res}')
         except socket.timeout:
           self.log.error(f'送信後、{self.timeout}秒以内にレスポンスがありませんでした。')
-          return dict(status='Error')
+          res = dict(is_sccess=False, msg='Timeout')
       return res
     except ConnectionRefusedError:
       self.log.error(f'{self.host}:{self.port} に接続できませんでした。')
       self.log.error('  - Dobot側プログラムが実行状態であることを確認してください。') 
-      return dict(status='Error')
+      return dict(is_sccess=False, msg='ConnectionRefused')
 
   def arm_orientation(self,mode):
     '''
@@ -158,6 +163,9 @@ class CommandSender:
 
   def quit(self):
     return self._send(dict(command='Quit'))
+  
+  def ping(self):
+    return self._send(dict(command='Ping'))
 
   def __repr__(self):
     return f'DobotCommandSender_{self.host}:{self.port}'

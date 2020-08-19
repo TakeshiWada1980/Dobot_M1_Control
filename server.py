@@ -86,6 +86,10 @@ def exec_cmd(c):
         dType.SetPTPJumpParamsEx(api,c['height'],c['zlimit'],1)
       res = dict(is_sccess=True)
 
+    elif c['command'] == 'Ping' :
+      log.info('Ping')
+      res = dict(is_sccess=True)
+
     elif c['command'] == 'Quit' :
       log.info('Quit')
       res = dict(is_sccess=True)
