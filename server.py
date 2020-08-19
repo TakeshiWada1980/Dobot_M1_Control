@@ -28,71 +28,78 @@ def exec_cmd(c):
 
     # 基本的には、ここのelif節の実装を拡張していく。
 
-    #JUMP命令 
-    if c['command'] == 'JUMP' :
-      log.info('JUMP TO ({0},{1},{2},{3})'.format(c['x'],c['y'],c['z'],c['r']))
+    #JumpTo命令 
+    if c['command'] == 'JumpTo' :
+      log.info('JumpTo ({0},{1},{2},{3})'.format(c['x'],c['y'],c['z'],c['r']))
       if DOBOT_STUDIO_ENV :
         dType.SetPTPCmdEx(api,0,c['x'],c['y'],c['z'],c['r'],1)
-      res = dict(status='OK')
+      res = dict(is_sccess=True)
 
-    #WAIT命令 
-    elif c['command'] == 'WAIT' :
-      log.info('WAIT ({0} ms)'.format(c['ms']))
+    #JumpTo命令 
+    elif c['command'] == 'GoTo' :
+      log.info('GoTo ({0},{1},{2},{3})'.format(c['x'],c['y'],c['z'],c['r']))
+      if DOBOT_STUDIO_ENV :
+        dType.SetPTPCmdEx(api,2,c['x'],c['y'],c['z'],c['r'],1)
+      res = dict(is_sccess=True)
+
+    #Wait命令 
+    elif c['command'] == 'Wait' :
+      log.info('Wait ({0} ms)'.format(c['ms']))
       if DOBOT_STUDIO_ENV :
         dType.SetWAITCmdEx(api,c['s'],1)
-      res = dict(status='OK')
+      res = dict(is_sccess=True)
 
-    #SETOUTPUT命令 
-    elif c['command'] == 'SETOUTPUT' :
-      log.info('SET ({0} pin / Value {1})'.format(c['pin'],c['value']))
+    #SetOutput命令 
+    elif c['command'] == 'SetOutput' :
+      log.info('SetOutput ({0} pin / Value {1})'.format(c['pin'],c['value']))
       if DOBOT_STUDIO_ENV :
         dType.SetIODOEx(api, c['pin'], c['value'], 1)
-      res = dict(status='OK')
+      res = dict(is_sccess=True)
 
-    #GETINPUT命令 
-    elif c['command'] == 'GETINPUT' :
+    #Get(Analog)Input命令
+    elif c['command'] == 'GetInput' :
       if DOBOT_STUDIO_ENV :
         result=dType.GetIODI(api,c[pin])[0]
       else :
         result=334 # Dummy値
-      log.info('GET ({0} pin / Value {1})'.format(c['pin'],result))
-      res = dict(status='OK',ret=result)
+      log.info('GetInput ({0} pin / Value {1})'.format(c['pin'],result))
+      res = dict(status='OK',value=result)
 
-    #ARMORIENTATION命令
-    elif c['command'] == 'ARMORIENTATION' :
-      log.info('ARMORIENTATION ({0} mode)'.format(c['mode']))
+    #ArmOrientation命令
+    elif c['command'] == 'ArmOrientation' :
+      log.info('ArmOrientation ({0} mode)'.format(c['mode']))
       if DOBOT_STUDIO_ENV :
         dType.SetArmOrientationEx(api,c['mode'], 1)
-      res = dict(status='OK')
+      res = dict(is_sccess=True)
 
-    #SETCORDINATESPEED命令 
-    elif c['command'] == 'SETCORDINATESPEED' :
-      log.info('SETCORDINATESPEED ({0} {1})'.format(c['velocity'],c['jerk']))
+    #SetCordinateSpeed命令 
+    elif c['command'] == 'SetCordinateSpeed' :
+      log.info('SetCordinateSpeed ({0} {1})'.format(c['velocity'],c['jerk']))
       if DOBOT_STUDIO_ENV :
         dType.SetPTPCommonParamsEx(api,c['velocity'],c['jerk'],1)
-      res = dict(status='OK')
+      res = dict(is_sccess=True)
 
-    #SETJUMPPARAM命令 
-    elif c['command'] == 'SETJUMPPARAM' :
-      log.info('SETJUMPPARAM (hieght = {0} zlimit = {1})'.format(c['height'],c['zlimit']))
+    #SetJumpPram命令 
+    elif c['command'] == 'SetJumpPram' :
+      log.info('SetJumpPram (hieght = {0} zlimit = {1})'.format(c['height'],c['zlimit']))
       if DOBOT_STUDIO_ENV :
         dType.SetPTPJumpParamsEx(api,c['height'],c['zlimit'],1)
-      res = dict(status='OK')
+      res = dict(is_sccess=True)
 
-    elif c['command'] == 'QUIT' :
-      log.info('QUIT')
-      res = dict(status='OK')
+    elif c['command'] == 'Quit' :
+      log.info('Quit')
+      res = dict(is_sccess=True)
 
     else :
       msg = 'Unknown commad : {0}'.format(str(c['command']))
       log.error(msg)
-      res = dict(status='Error',msg=msg)
+      res = dict(is_sccess=False,msg=msg)
 
   except KeyError:
     cmd_arg = [ s for s in c.keys() if s != 'command']
     msg = 'Invalid argument : "{0}" -> {{{1}}}'.format(c['command'],", ".join(cmd_arg))
     log.error(msg)
-    res = dict(status='Error',msg=msg)
+    res = dict(is_sccess=False,msg=msg)
 
   return res
 
@@ -111,5 +118,5 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     finally:
       c.close()
       if 'command' in cmd_dict :
-        if cmd_dict['command']=='QUIT' :
+        if cmd_dict['command']=='Quit' :
           break
