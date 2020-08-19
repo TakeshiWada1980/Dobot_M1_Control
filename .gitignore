@@ -1,3 +1,4 @@
 .vscode/
 textbooks/
+__pycache__/
 dobot.code-workspace
