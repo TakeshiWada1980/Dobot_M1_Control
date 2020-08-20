@@ -5,6 +5,8 @@ import dobot
 
 # pytest test_dobot.py -v
 # pytest test_dobot.py -v -k "jump_to"
+# [Ctrl]+[Shift]+[P] Python: Run All Tests
+# [Ctrl]+[Shift]+[P] Python: Show Test Output
 
 @pytest.fixture(scope='module')
 def cs():
