@@ -35,7 +35,14 @@ def exec_cmd(c):
         dType.SetPTPCmdEx(api,0,c['x'],c['y'],c['z'],c['r'],1)
       res = dict(is_sccess=True)
 
-    #JumpTo命令 
+    #JumpJointTo命令 
+    elif c['command'] == 'JumpJointTo' :
+      log.info('JumpJointTo ({0},{1},{2},{3})'.format(c['j1'],c['j2'],c['j3'],c['j4']))
+      if DOBOT_STUDIO_ENV :
+        dType.SetPTPCmdEx(api,3,c['j1'],c['j2'],c['j3'],c['j4'],1)
+      res = dict(is_sccess=True)
+
+    #GoTo命令 
     elif c['command'] == 'GoTo' :
       log.info('GoTo ({0},{1},{2},{3})'.format(c['x'],c['y'],c['z'],c['r']))
       if DOBOT_STUDIO_ENV :
@@ -46,7 +53,7 @@ def exec_cmd(c):
     elif c['command'] == 'Wait' :
       log.info('Wait ({0} ms)'.format(c['ms']))
       if DOBOT_STUDIO_ENV :
-        dType.SetWAITCmdEx(api,c['s'],1)
+        dType.SetWAITCmdEx(api,c['ms'],1)
       res = dict(is_sccess=True)
 
     #SetOutput命令 

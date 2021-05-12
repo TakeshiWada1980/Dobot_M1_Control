@@ -17,8 +17,8 @@ class CommandSender:
       接続先ポート（デフォルト値 : 0）
     '''
 
-    self.__Z_MAX_LIMIT = 250
-    self.__Z_MIN_LIMIT = 10
+    self.__Z_MAX_LIMIT = 185
+    self.__Z_MIN_LIMIT = 60
 
     self.host = host
     self.port = port
@@ -78,7 +78,7 @@ class CommandSender:
     Parameters
     ----------
     mode : int
-      設定値 0(Right) or 1(Left)
+      設定値 0(Left) or 1(Right)
     '''
     if mode not in (0,1):
       msg = f'InvalidArgError : mode={mode} in arm_orientation(...)'
@@ -190,6 +190,30 @@ class CommandSender:
       msg = f'CommandSender.jump_to(...) の 引数 z は {self.Z_MIN_LIMIT} 以上 {self.Z_MAX_LIMIT} 以下で与えてください。'
       raise ValueError(msg)
     return self._send(dict(command='JumpTo',x=x,y=y,z=z,r=r))
+
+  def jump_joint_to(self, j1:int, j2:int, j3:int, j4:int=0):
+    '''
+    JumpTo
+
+    Parameters
+    ----------
+    j1 : int
+      移動先のJ1角度
+    j2 : int
+      移動先のJ2角度
+    j3 : int
+      移動先のZ座標     
+    j4 : int
+      回転量（デフォルト値:0）
+    '''
+    for t in ((j1,'j1'),(j2,'j2'),(j3,'j3'),(j4,'j4')):
+      if not isinstance(t[0],int) :
+        msg = f'CommandSender.jump_joint_to(...) の 引数 {t[1]} は int型 で与えてください。'
+        raise TypeError(msg)
+    if not( self.Z_MIN_LIMIT <= j3 <= self.Z_MAX_LIMIT ):
+      msg = f'CommandSender.jump_joint_to(...) の 引数 z は {self.Z_MIN_LIMIT} 以上 {self.Z_MAX_LIMIT} 以下で与えてください。'
+      raise ValueError(msg)
+    return self._send(dict(command='JumpJointTo',j1=j1,j2=j2,j3=j3,j4=j4))
 
   def go_to(self, x:int, y:int, z:int, r:int=0):
     '''
