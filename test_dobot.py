@@ -12,13 +12,13 @@ import dobot
 def cs():
   subprocess.Popen(['python','server.py'])
   time.sleep(1)
-  cs = dobot.CommandSender(host='127.0.0.1')
+  cs = dobot.CommandSender(host='127.0.0.1',port=8893)
   yield cs
   cs.quit()
 
 @pytest.mark.parametrize(('x','y','z','r','expected'), [
-  (   10,    10,   20, None,  True),
-  (   10,    10,   20,    0,  True),
+  (   10,    10,   60, None,  True),
+  (   10,    10,   60,    0,  True),
   (   10,    10,    0,    0,  ValueError), # zの範囲異常 raises(ValueError
   (   10,  '10',    0,    0,  TypeError ), # yのses(ValueError
 ])

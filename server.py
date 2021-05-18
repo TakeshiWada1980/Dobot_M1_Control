@@ -13,8 +13,9 @@ logging.basicConfig(format='[%(levelname)s] %(asctime)s: %(message)s')
 log = logging.getLogger(__name__)
 log.setLevel(level=logging.DEBUG)
 
+#HOST = '192.168.33.40'
 HOST = '127.0.0.1'
-PORT = 8889
+PORT = 8893
 BUFFER_SIZE = 1024
 
 def exec_cmd(c):
@@ -116,18 +117,21 @@ def exec_cmd(c):
 
 #### MainLoop ###
 
-with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-  s.bind((HOST, PORT))
-  s.listen()
-  while True :
-    c, client = s.accept()
-    log.debug('Client connected {0}'.format(client))
-    try:  
-      cmd_dict = json.loads(c.recv(BUFFER_SIZE).decode('UTF-8'))
-      res = exec_cmd(cmd_dict)
-      c.send(json.dumps(res,ensure_ascii=False).encode())
-    finally:
-      c.close()
-      if 'command' in cmd_dict :
-        if cmd_dict['command']=='Quit' :
-          break
+try:
+  with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+    s.bind((HOST, PORT))
+    s.listen()
+    while True :
+      c, client = s.accept()
+      log.debug('Client connected {0}'.format(client))
+      try:  
+        cmd_dict = json.loads(c.recv(BUFFER_SIZE).decode('UTF-8'))
+        res = exec_cmd(cmd_dict)
+        c.send(json.dumps(res,ensure_ascii=False).encode())
+      finally:
+        c.close()
+        if 'command' in cmd_dict :
+          if cmd_dict['command']=='Quit' :
+            break
+finally:
+  s.close()

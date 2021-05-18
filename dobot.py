@@ -22,7 +22,7 @@ class CommandSender:
 
     self.host = host
     self.port = port
-    self.timeout = 5
+    self.timeout = 8
     self.buffer_size = 1024
     self.log = logging.getLogger('DobotCommandSender')
 
@@ -60,8 +60,13 @@ class CommandSender:
           s.settimeout(self.timeout)
           s.send(json.dumps(cmd_dict,ensure_ascii=False).encode())
           self.log.info(f'SEND >> {cmd_dict}')
-          res = json.loads(s.recv(self.buffer_size).decode('UTF-8'))
+          raw = s.recv(self.buffer_size).decode('UTF-8')
+          res = json.loads(raw)
           self.log.info(f' RES >> {res}')
+        except json.JSONDecodeError as e:       
+          self.log.error('Dobot側でエラーが発生した可能性があるため強制終了させます。')
+          self.log.error('最後に送信したコマンドの1つ前に原因がある可能性が高いです。')
+          raise Exception
         except socket.timeout:
           self.log.error(f'送信後、{self.timeout}秒以内にレスポンスがありませんでした。')
           res = dict(is_sccess=False, msg='Timeout')
